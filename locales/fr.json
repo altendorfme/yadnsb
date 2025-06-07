@@ -41,7 +41,9 @@
         "address": "Adresse",
         "port": "Port",
         "addCustom": "Ajouter un fournisseur personnalisé",
-        "customProvider": "Fournisseur personnalisé"
+        "customProvider": "Fournisseur personnalisé",
+        "groups": "groupes",
+        "selectAllGroups": "Sélectionner pour tester tous les groupes"
     },
     "customProvider": {
         "title": "Ajouter un fournisseur personnalisé",

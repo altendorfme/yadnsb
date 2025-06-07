@@ -41,7 +41,9 @@
         "address": "地址",
         "port": "端口",
         "addCustom": "添加自定义提供商",
-        "customProvider": "自定义提供商"
+        "customProvider": "自定义提供商",
+        "groups": "组",
+        "selectAllGroups": "选择以测试所有组"
     },
     "customProvider": {
         "title": "添加自定义提供商",

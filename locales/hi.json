@@ -41,7 +41,9 @@
         "address": "पता",
         "port": "पोर्ट",
         "addCustom": "कस्टम प्रदाता जोड़ें",
-        "customProvider": "कस्टम प्रदाता"
+        "customProvider": "कस्टम प्रदाता",
+        "groups": "समूह",
+        "selectAllGroups": "सभी समूहों का परीक्षण करने के लिए चुनें"
     },
     "customProvider": {
         "title": "कस्टम प्रदाता जोड़ें",

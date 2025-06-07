@@ -41,7 +41,9 @@
         "address": "Indirizzo",
         "port": "Porta",
         "addCustom": "Aggiungi Provider Personalizzato",
-        "customProvider": "Provider Personalizzato"
+        "customProvider": "Provider Personalizzato",
+        "groups": "gruppi",
+        "selectAllGroups": "Seleziona per testare tutti i gruppi"
     },
     "customProvider": {
         "title": "Aggiungi Provider Personalizzato",

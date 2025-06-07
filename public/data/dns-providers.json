@@ -1,44 +1,133 @@
 {
     "providers": [
         {
-            "name": "AdGuard DNS (Unfiltered)",
-            "servers": [
+            "name": "AdGuard DNS",
+            "groups": [
                 {
-                    "type": "IPv4",
-                    "address": "94.140.14.140",
-                    "port": 53
+                    "name": "Unfiltered",
+                    "servers": [
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.14.140",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.14.141",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::1:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::2:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "DoH",
+                            "address": "https://unfiltered.adguard-dns.com/dns-query",
+                            "port": 443,
+                            "method": "POST",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "unfiltered.adguard-dns.com",
+                            "port": 853
+                        },
+                        {
+                            "type": "DoQ",
+                            "address": "unfiltered.adguard-dns.com",
+                            "port": 853
+                        }
+                    ]
                 },
                 {
-                    "type": "IPv4",
-                    "address": "94.140.14.141",
-                    "port": 53
+                    "name": "Default",
+                    "servers": [
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.14.14",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.15.15",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::ad1:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::ad2:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "DoH",
+                            "address": "https://dns.adguard-dns.com/dns-query",
+                            "port": 443,
+                            "method": "POST",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "dns.adguard-dns.com",
+                            "port": 853
+                        },
+                        {
+                            "type": "DoQ",
+                            "address": "dns.adguard-dns.com",
+                            "port": 853
+                        }
+                    ]
                 },
                 {
-                    "type": "IPv6",
-                    "address": "2a10:50c0::1:ff",
-                    "port": 53
-                },
-                {
-                    "type": "IPv6",
-                    "address": "2a10:50c0::2:ff",
-                    "port": 53
-                },
-                {
-                    "type": "DoH",
-                    "address": "https://unfiltered.adguard-dns.com/dns-query",
-                    "port": 443,
-                    "method": "POST",
-                    "format": "wireformat"
-                },
-                {
-                    "type": "DoT",
-                    "address": "unfiltered.adguard-dns.com",
-                    "port": 853
-                },
-                {
-                    "type": "DoQ",
-                    "address": "unfiltered.adguard-dns.com",
-                    "port": 853
+                    "name": "Family",
+                    "servers": [
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.14.15",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv4",
+                            "address": "94.140.15.16",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::bad1:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2a10:50c0::bad2:ff",
+                            "port": 53
+                        },
+                        {
+                            "type": "DoH",
+                            "address": "https://family.adguard-dns.com/dns-query",
+                            "port": 443,
+                            "method": "POST",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "family.adguard-dns.com",
+                            "port": 853
+                        },
+                        {
+                            "type": "DoQ",
+                            "address": "family.adguard-dns.com",
+                            "port": 853
+                        }
+                    ]
                 }
             ]
         },
@@ -118,38 +207,80 @@
         },
         {
             "name": "Quad9",
-            "servers": [
+            "groups": [
                 {
-                    "type": "IPv4",
-                    "address": "9.9.9.10",
-                    "port": 53
+                    "name": "Standard",
+                    "servers": [
+                        {
+                            "type": "IPv4",
+                            "address": "9.9.9.9",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv4",
+                            "address": "149.112.112.112",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2620:fe::fe",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2620:fe::9",
+                            "port": 53
+                        },
+                        {
+                            "type": "DoH",
+                            "address": "https://dns.quad9.net/dns-query",
+                            "port": 443,
+                            "method": "POST",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "dns.quad9.net",
+                            "port": 853
+                        }
+                    ]
                 },
                 {
-                    "type": "IPv4",
-                    "address": "149.112.112.10",
-                    "port": 53
-                },
-                {
-                    "type": "IPv6",
-                    "address": "2620:fe::10",
-                    "port": 53
-                },
-                {
-                    "type": "IPv6",
-                    "address": "2620:fe::fe:10",
-                    "port": 53
-                },
-                {
-                    "type": "DoH",
-                    "address": "https://dns10.quad9.net/dns-query",
-                    "port": 443,
-                    "method": "POST",
-                    "format": "wireformat"
-                },
-                {
-                    "type": "DoT",
-                    "address": "dns10.quad9.net",
-                    "port": 853
+                    "name": "Unfiltered",
+                    "servers": [
+                        {
+                            "type": "IPv4",
+                            "address": "9.9.9.10",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv4",
+                            "address": "149.112.112.10",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2620:fe::10",
+                            "port": 53
+                        },
+                        {
+                            "type": "IPv6",
+                            "address": "2620:fe::fe:10",
+                            "port": 53
+                        },
+                        {
+                            "type": "DoH",
+                            "address": "https://dns10.quad9.net/dns-query",
+                            "port": 443,
+                            "method": "POST",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "dns10.quad9.net",
+                            "port": 853
+                        }
+                    ]
                 }
             ]
         },
@@ -191,41 +322,46 @@
             ]
         },
         {
-            "name": "NextDNS (Ultra-low latency)",
-            "servers": [
+            "name": "NextDNS",
+            "groups": [
                 {
-                    "type": "DoH",
-                    "address": "https://dns.nextdns.io",
-                    "port": 443,
-                    "method": "GET",
-                    "format": "wireformat"
+                    "name": "Ultra-low latency",
+                    "servers": [
+                        {
+                            "type": "DoH",
+                            "address": "https://dns.nextdns.io",
+                            "port": 443,
+                            "method": "GET",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "dns.nextdns.io",
+                            "port": 853
+                        }
+                    ]
                 },
                 {
-                    "type": "DoT",
-                    "address": "dns.nextdns.io",
-                    "port": 853
+                    "name": "Anycast",
+                    "servers": [
+                        {
+                            "type": "DoH",
+                            "address": "https://anycast.dns.nextdns.io",
+                            "port": 443,
+                            "method": "GET",
+                            "format": "wireformat"
+                        },
+                        {
+                            "type": "DoT",
+                            "address": "anycast.dns.nextdns.io",
+                            "port": 853
+                        }
+                    ]
                 }
             ]
         },
         {
-            "name": "NextDNS (Anycast)",
-            "servers": [
-                {
-                    "type": "DoH",
-                    "address": "https://anycast.dns.nextdns.io",
-                    "port": 443,
-                    "method": "GET",
-                    "format": "wireformat"
-                },
-                {
-                    "type": "DoT",
-                    "address": "anycast.dns.nextdns.io",
-                    "port": 853
-                }
-            ]
-        },
-        {
-            "name": "ControlD (Unfiltered)",
+            "name": "ControlD",
             "servers": [
                 {
                     "type": "IPv4",

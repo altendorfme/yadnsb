@@ -41,7 +41,9 @@
         "address": "Endereço",
         "port": "Porta",
         "addCustom": "Adicionar Provedor Customizado",
-        "customProvider": "Provedor Customizado"
+        "customProvider": "Provedor Customizado",
+        "groups": "grupos",
+        "selectAllGroups": "Selecione para testar todos os grupos"
     },
     "customProvider": {
         "title": "Adicionar provedor Customizado",

@@ -41,7 +41,9 @@
         "address": "Adresse",
         "port": "Port",
         "addCustom": "Benutzerdefinierten Anbieter hinzufügen",
-        "customProvider": "Benutzerdefinierter Anbieter"
+        "customProvider": "Benutzerdefinierter Anbieter",
+        "groups": "Gruppen",
+        "selectAllGroups": "Auswählen, um alle Gruppen zu testen"
     },
     "customProvider": {
         "title": "Benutzerdefinierten Anbieter hinzufügen",

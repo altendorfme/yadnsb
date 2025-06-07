@@ -41,7 +41,9 @@
         "address": "Address",
         "port": "Port",
         "addCustom": "Add Custom Provider",
-        "customProvider": "Custom Provider"
+        "customProvider": "Custom Provider",
+        "groups": "groups",
+        "selectAllGroups": "Select to test all groups"
     },
     "customProvider": {
         "title": "Add Custom Provider",

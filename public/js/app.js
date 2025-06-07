@@ -21,7 +21,7 @@ class YADNSBApp {
         try {
             const response = await fetch('/data/dns-providers.json');
             const data = await response.json();
-            this.providers = data.providers;
+            this.providers = this.normalizeProviders(data.providers);
             this.testDomains = data.testDomains;
 
             if (window.customProvidersManager) {
@@ -33,6 +33,41 @@ class YADNSBApp {
             this.providers = [];
             this.testDomains = [];
         }
+    }
+
+    normalizeProviders(providers) {
+        const normalized = [];
+        
+        providers.forEach(provider => {
+            if (provider.groups) {
+                const mainProvider = {
+                    name: provider.name,
+                    isMainProvider: true,
+                    groups: provider.groups.map(group => ({
+                        name: `${provider.name} (${group.name})`,
+                        servers: group.servers,
+                        parentProvider: provider.name,
+                        groupName: group.name
+                    })),
+                    servers: []
+                };
+                normalized.push(mainProvider);
+                
+                provider.groups.forEach(group => {
+                    normalized.push({
+                        name: `${provider.name} (${group.name})`,
+                        servers: group.servers,
+                        parentProvider: provider.name,
+                        groupName: group.name,
+                        isSubGroup: true
+                    });
+                });
+            } else {
+                normalized.push(provider);
+            }
+        });
+        
+        return normalized;
     }
 
     refreshProviders() {
@@ -92,10 +127,15 @@ class YADNSBApp {
         const selectedProtocols = this.getSelectedProtocols();
 
         const filteredProviders = this.providers.filter(provider => {
-            const hasMatchingProtocol = provider.servers.some(server =>
-                selectedProtocols.includes(server.type)
-            );
-            return hasMatchingProtocol;
+            if (provider.isMainProvider) {
+                return provider.groups.some(group =>
+                    group.servers.some(server => selectedProtocols.includes(server.type))
+                );
+            } else if (provider.isSubGroup) {
+                return provider.servers.some(server => selectedProtocols.includes(server.type));
+            } else {
+                return provider.servers.some(server => selectedProtocols.includes(server.type));
+            }
         });
 
         const i18n = window.i18n;
@@ -122,7 +162,7 @@ class YADNSBApp {
 
         container.innerHTML = tableHtml;
 
-        document.querySelectorAll('.provider-checkbox').forEach(checkbox => {
+        document.querySelectorAll('.provider-checkbox, .group-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => this.toggleProvider(e.target));
         });
 
@@ -159,43 +199,71 @@ class YADNSBApp {
         let rows = '';
 
         filteredProviders.forEach((provider, providerIndex) => {
-            const filteredServers = provider.servers.filter(server =>
+            if (provider.isMainProvider) {
+                rows += this.generateMainProviderRows(provider, selectedProtocols);
+            } else if (!provider.isSubGroup) {
+                rows += this.generateSimpleProviderRows(provider, selectedProtocols);
+            }
+        });
+
+        return rows;
+    }
+
+    generateMainProviderRows(provider, selectedProtocols) {
+        let rows = '';
+        const isMainSelected = this.selectedProviders.some(p => p.name === provider.name);
+        
+        rows += `
+            <tr class="${isMainSelected ? 'table-success' : ''}">
+                <td class="align-middle">
+                    <input class="form-check-input provider-checkbox"
+                           type="checkbox"
+                           id="provider-${provider.name.replace(/\s+/g, '-')}"
+                           data-provider="${provider.name}"
+                           data-is-main="true"
+                           ${isMainSelected ? 'checked' : ''}>
+                </td>
+                <td class="align-middle fw-bold">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-folder me-2 text-warning"></i>
+                        <span>${provider.name}</span>
+                        <small class="text-muted ms-2">(${provider.groups.length} ${window.i18n ? window.i18n.t('providers.groups') : 'groups'})</small>
+                    </div>
+                </td>
+                <td colspan="3" class="text-muted">
+                    ${window.i18n ? window.i18n.t('providers.selectAllGroups') : 'Select to test all groups'}
+                </td>
+            </tr>
+        `;
+
+        provider.groups.forEach(group => {
+            const filteredServers = group.servers.filter(server =>
                 selectedProtocols.includes(server.type)
             );
 
-            const isSelected = this.selectedProviders.some(p => p.name === provider.name);
+            if (filteredServers.length === 0) return;
+
+            const isGroupSelected = this.selectedProviders.some(p => p.name === group.name);
 
             filteredServers.forEach((server, index) => {
                 const isFirstRow = index === 0;
                 const rowspan = isFirstRow ? filteredServers.length : 0;
 
                 rows += `
-                    <tr class="${isSelected ? 'table-success' : ''}">
+                    <tr class="${isGroupSelected ? 'table-success' : ''}">
                         ${isFirstRow ? `
-                            <td rowspan="${rowspan}" class="align-middle">
-                                <input class="form-check-input provider-checkbox"
+                            <td rowspan="${rowspan}" class="align-middle ps-4">
+                                <input class="form-check-input group-checkbox"
                                        type="checkbox"
-                                       id="provider-${provider.name.replace(/\s+/g, '-')}"
-                                       data-provider="${provider.name}"
-                                       ${isSelected ? 'checked' : ''}>
+                                       id="group-${group.name.replace(/\s+/g, '-')}"
+                                       data-provider="${group.name}"
+                                       data-parent="${provider.name}"
+                                       ${isGroupSelected ? 'checked' : ''}>
                             </td>
-                            <td rowspan="${rowspan}" class="align-middle fw-semibold">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span>${provider.name}</span>
-                                    ${provider.isCustom ? `
-                                        <div class="btn-group btn-group-sm">
-                                            <button type="button" class="btn btn-outline-warning btn-sm edit-custom-provider"
-                                                    data-provider-index="${this.getCustomProviderIndex(provider.name)}"
-                                                    title="${window.i18n ? window.i18n.t('customProvider.edit') : 'Edit'}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm delete-custom-provider"
-                                                    data-provider-index="${this.getCustomProviderIndex(provider.name)}"
-                                                    title="${window.i18n ? window.i18n.t('customProvider.delete') : 'Delete'}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    ` : ''}
+                            <td rowspan="${rowspan}" class="align-middle ps-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-arrow-return-right me-2 text-muted"></i>
+                                    <span>${group.groupName}</span>
                                 </div>
                             </td>
                         ` : ''}
@@ -207,6 +275,60 @@ class YADNSBApp {
                     </tr>
                 `;
             });
+        });
+
+        return rows;
+    }
+
+    generateSimpleProviderRows(provider, selectedProtocols) {
+        let rows = '';
+        const filteredServers = provider.servers.filter(server =>
+            selectedProtocols.includes(server.type)
+        );
+
+        const isSelected = this.selectedProviders.some(p => p.name === provider.name);
+
+        filteredServers.forEach((server, index) => {
+            const isFirstRow = index === 0;
+            const rowspan = isFirstRow ? filteredServers.length : 0;
+
+            rows += `
+                <tr class="${isSelected ? 'table-success' : ''}">
+                    ${isFirstRow ? `
+                        <td rowspan="${rowspan}" class="align-middle">
+                            <input class="form-check-input provider-checkbox"
+                                   type="checkbox"
+                                   id="provider-${provider.name.replace(/\s+/g, '-')}"
+                                   data-provider="${provider.name}"
+                                   ${isSelected ? 'checked' : ''}>
+                        </td>
+                        <td rowspan="${rowspan}" class="align-middle fw-semibold">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>${provider.name}</span>
+                                ${provider.isCustom ? `
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-warning btn-sm edit-custom-provider"
+                                                data-provider-index="${this.getCustomProviderIndex(provider.name)}"
+                                                title="${window.i18n ? window.i18n.t('customProvider.edit') : 'Edit'}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm delete-custom-provider"
+                                                data-provider-index="${this.getCustomProviderIndex(provider.name)}"
+                                                title="${window.i18n ? window.i18n.t('customProvider.delete') : 'Delete'}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </td>
+                    ` : ''}
+                    <td>
+                        <span class="badge ${this.getProtocolColor(server.type)}">${server.type}</span>
+                    </td>
+                    <td class="font-monospace">${server.address}</td>
+                    <td>${server.port}</td>
+                </tr>
+            `;
         });
 
         return rows;
@@ -227,8 +349,8 @@ class YADNSBApp {
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         if (!selectAllCheckbox) return;
 
-        const allCheckboxes = document.querySelectorAll('.provider-checkbox');
-        const checkedCheckboxes = document.querySelectorAll('.provider-checkbox:checked');
+        const allCheckboxes = document.querySelectorAll('.provider-checkbox, .group-checkbox');
+        const checkedCheckboxes = document.querySelectorAll('.provider-checkbox:checked, .group-checkbox:checked');
 
         if (checkedCheckboxes.length === 0) {
             selectAllCheckbox.checked = false;
@@ -264,16 +386,15 @@ class YADNSBApp {
 
     toggleProvider(checkbox) {
         const providerName = checkbox.dataset.provider;
-        const provider = this.providers.find(p => p.name === providerName);
-
-        if (!provider) return;
-
-        if (checkbox.checked) {
-            if (!this.selectedProviders.some(p => p.name === providerName)) {
-                this.selectedProviders.push(provider);
-            }
+        const isMainProvider = checkbox.dataset.isMain === 'true';
+        const parentProvider = checkbox.dataset.parent;
+        
+        if (isMainProvider) {
+            this.toggleMainProvider(providerName, checkbox.checked);
+        } else if (parentProvider) {
+            this.toggleGroupProvider(providerName, parentProvider, checkbox.checked);
         } else {
-            this.selectedProviders = this.selectedProviders.filter(p => p.name !== providerName);
+            this.toggleSimpleProvider(providerName, checkbox.checked);
         }
 
         this.updateProviderCount();
@@ -282,15 +403,73 @@ class YADNSBApp {
         this.renderProviders();
     }
 
+    toggleMainProvider(providerName, isChecked) {
+        const mainProvider = this.providers.find(p => p.name === providerName && p.isMainProvider);
+        if (!mainProvider) return;
+
+        if (isChecked) {
+            if (!this.selectedProviders.some(p => p.name === providerName)) {
+                this.selectedProviders.push(mainProvider);
+            }
+            
+            mainProvider.groups.forEach(group => {
+                const groupProvider = this.providers.find(p => p.name === group.name);
+                if (groupProvider && !this.selectedProviders.some(p => p.name === group.name)) {
+                    this.selectedProviders.push(groupProvider);
+                }
+            });
+        } else {
+            this.selectedProviders = this.selectedProviders.filter(p => p.name !== providerName);
+            
+            mainProvider.groups.forEach(group => {
+                this.selectedProviders = this.selectedProviders.filter(p => p.name !== group.name);
+            });
+        }
+    }
+
+    toggleGroupProvider(groupName, parentName, isChecked) {
+        const groupProvider = this.providers.find(p => p.name === groupName);
+        if (!groupProvider) return;
+
+        if (isChecked) {
+            if (!this.selectedProviders.some(p => p.name === groupName)) {
+                this.selectedProviders.push(groupProvider);
+            }
+        } else {
+            this.selectedProviders = this.selectedProviders.filter(p => p.name !== groupName);
+            
+            this.selectedProviders = this.selectedProviders.filter(p => p.name !== parentName);
+        }
+    }
+
+    toggleSimpleProvider(providerName, isChecked) {
+        const provider = this.providers.find(p => p.name === providerName);
+        if (!provider) return;
+
+        if (isChecked) {
+            if (!this.selectedProviders.some(p => p.name === providerName)) {
+                this.selectedProviders.push(provider);
+            }
+        } else {
+            this.selectedProviders = this.selectedProviders.filter(p => p.name !== providerName);
+        }
+    }
+
     selectAllProviders() {
-        const checkboxes = document.querySelectorAll('.provider-checkbox');
+        const checkboxes = document.querySelectorAll('.provider-checkbox, .group-checkbox');
         checkboxes.forEach(cb => {
             if (!cb.checked) {
                 cb.checked = true;
                 const providerName = cb.dataset.provider;
-                const provider = this.providers.find(p => p.name === providerName);
-                if (provider && !this.selectedProviders.some(p => p.name === providerName)) {
-                    this.selectedProviders.push(provider);
+                const isMainProvider = cb.dataset.isMain === 'true';
+                const parentProvider = cb.dataset.parent;
+                
+                if (isMainProvider) {
+                    this.toggleMainProvider(providerName, true);
+                } else if (parentProvider) {
+                    this.toggleGroupProvider(providerName, parentProvider, true);
+                } else {
+                    this.toggleSimpleProvider(providerName, true);
                 }
             }
         });
@@ -301,7 +480,7 @@ class YADNSBApp {
     }
 
     deselectAllProviders() {
-        const checkboxes = document.querySelectorAll('.provider-checkbox');
+        const checkboxes = document.querySelectorAll('.provider-checkbox, .group-checkbox');
         checkboxes.forEach(cb => {
             if (cb.checked) {
                 cb.checked = false;

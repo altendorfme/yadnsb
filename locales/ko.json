@@ -41,7 +41,9 @@
         "address": "주소",
         "port": "포트",
         "addCustom": "사용자 정의 공급자 추가",
-        "customProvider": "사용자 정의 공급자"
+        "customProvider": "사용자 정의 공급자",
+        "groups": "그룹",
+        "selectAllGroups": "모든 그룹을 테스트하려면 선택"
     },
     "customProvider": {
         "title": "사용자 정의 공급자 추가",

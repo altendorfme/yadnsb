@@ -41,7 +41,9 @@
         "address": "Адрес",
         "port": "Порт",
         "addCustom": "Добавить свой провайдер",
-        "customProvider": "Свой провайдер"
+        "customProvider": "Свой провайдер",
+        "groups": "группы",
+        "selectAllGroups": "Выберите для тестирования всех групп"
     },
     "customProvider": {
         "title": "Добавить своего провайдера",

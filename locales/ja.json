@@ -41,7 +41,9 @@
         "address": "アドレス",
         "port": "ポート",
         "addCustom": "カスタムプロバイダーを追加",
-        "customProvider": "カスタムプロバイダー"
+        "customProvider": "カスタムプロバイダー",
+        "groups": "グループ",
+        "selectAllGroups": "すべてのグループをテストするために選択"
     },
     "customProvider": {
         "title": "カスタムプロバイダーを追加",

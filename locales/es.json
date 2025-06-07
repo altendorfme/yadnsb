@@ -41,7 +41,9 @@
         "address": "Dirección",
         "port": "Puerto",
         "addCustom": "Agregar proveedor personalizado",
-        "customProvider": "Proveedor personalizado"
+        "customProvider": "Proveedor personalizado",
+        "groups": "grupos",
+        "selectAllGroups": "Seleccionar para probar todos los grupos"
     },
     "customProvider": {
         "title": "Agregar proveedor personalizado",
