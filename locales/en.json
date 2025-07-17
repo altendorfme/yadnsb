@@ -35,6 +35,8 @@
     "providers": {
         "selectAll": "Select All",
         "deselectAll": "Deselect All",
+        "expandAll": "Expand All",
+        "collapseAll": "Collapse All",
         "selected": "{{count}} providers selected",
         "provider": "Provider",
         "protocol": "Protocol",

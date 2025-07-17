@@ -35,6 +35,8 @@
     "providers": {
         "selectAll": "Selecionar todos",
         "deselectAll": "Desmarcar todos",
+        "expandAll": "Expandir todos",
+        "collapseAll": "Recolher todos",
         "selected": "{{count}} provedores selecionados",
         "provider": "Provedor",
         "protocol": "Protocolo",

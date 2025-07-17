@@ -182,20 +182,30 @@
                             <span data-i18n="navigation.providers">DNS Providers</span>
                         </h5>
                         <div class="d-flex">
+                            <div class="btn-group btn-group-sm me-2">
+                                <button type="button" class="btn btn-outline-info" id="expandAllGroups">
+                                    <i class="bi bi-folder2-open"></i>
+                                    <span class="d-none d-md-inline-block" data-i18n="providers.expandAll">Expand All</span>
+                                </button>
+                                <button type="button" class="btn btn-outline-info" id="collapseAllGroups">
+                                    <i class="bi bi-folder2"></i>
+                                    <span class="d-none d-md-inline-block" data-i18n="providers.collapseAll">Collapse All</span>
+                                </button>
+                            </div>
                             <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-outline-light" id="selectAllProviders">
                                     <i class="bi bi-check-all"></i>
-                                    <span data-i18n="providers.selectAll">Select All</span>
+                                    <span class="d-none d-md-inline-block" d-md-inline-block data-i18n="providers.selectAll">Select All</span>
                                 </button>
                                 <button type="button" class="btn btn-outline-light" id="deselectAllProviders">
                                     <i class="bi bi-x-square"></i>
-                                    <span data-i18n="providers.deselectAll">Deselect All</span>
+                                    <span class="d-none d-md-inline-block" data-i18n="providers.deselectAll">Deselect All</span>
                                 </button>
                             </div>
                             <div class="ms-md-2">
                                 <button type="button" class="btn btn-sm btn-outline-success" id="addCustomProvider">
                                     <i class="bi bi-plus-circle"></i>
-                                    <span data-i18n="providers.addCustom">Add Custom Provider</span>
+                                    <span class="d-none d-md-inline-block" data-i18n="providers.addCustom">Add Custom Provider</span>
                                 </button>
                             </div>
                         </div>

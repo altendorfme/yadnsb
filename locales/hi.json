@@ -35,6 +35,8 @@
     "providers": {
         "selectAll": "सभी चुनें",
         "deselectAll": "सभी अचयनित करें",
+        "expandAll": "सभी विस्तृत करें",
+        "collapseAll": "सभी संक्षिप्त करें",
         "selected": "{{count}} प्रदाता चुने गए",
         "provider": "प्रदाता",
         "protocol": "प्रोटोकॉल",

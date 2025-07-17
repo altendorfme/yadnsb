@@ -35,6 +35,8 @@
     "providers": {
         "selectAll": "Выбрать все",
         "deselectAll": "Снять выбор",
+        "expandAll": "Развернуть все",
+        "collapseAll": "Свернуть все",
         "selected": "Выбрано {{count}} провайдеров",
         "provider": "Провайдер",
         "protocol": "Протокол",

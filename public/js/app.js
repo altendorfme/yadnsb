@@ -3,6 +3,7 @@ class YADNSBApp {
         this.providers = [];
         this.selectedProviders = [];
         this.isTestRunning = false;
+        this.expandedGroups = new Set(); // Track which groups are expanded
         this.init();
     }
 
@@ -82,6 +83,8 @@ class YADNSBApp {
 
         document.getElementById('selectAllProviders').addEventListener('click', () => this.selectAllProviders());
         document.getElementById('deselectAllProviders').addEventListener('click', () => this.deselectAllProviders());
+        document.getElementById('expandAllGroups').addEventListener('click', () => this.expandAllGroups());
+        document.getElementById('collapseAllGroups').addEventListener('click', () => this.collapseAllGroups());
         document.getElementById('addCustomProvider').addEventListener('click', () => this.addCustomProvider());
 
         document.getElementById('exportCSV').addEventListener('click', () => this.exportCSV());
@@ -166,6 +169,15 @@ class YADNSBApp {
             checkbox.addEventListener('change', (e) => this.toggleProvider(e.target));
         });
 
+        document.querySelectorAll('.folder-toggle').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const providerName = e.target.dataset.provider;
+                this.toggleGroupExpansion(providerName);
+            });
+        });
+
         document.querySelectorAll('.edit-custom-provider').forEach(button => {
             button.addEventListener('click', (e) => {
                 const index = parseInt(e.target.closest('.edit-custom-provider').dataset.providerIndex);
@@ -212,6 +224,8 @@ class YADNSBApp {
     generateMainProviderRows(provider, selectedProtocols) {
         let rows = '';
         const isMainSelected = this.selectedProviders.some(p => p.name === provider.name);
+        const isExpanded = this.expandedGroups.has(provider.name);
+        const folderIcon = isExpanded ? 'bi-folder2-open' : 'bi-folder2';
         
         rows += `
             <tr class="${isMainSelected ? 'table-success' : ''}">
@@ -225,7 +239,10 @@ class YADNSBApp {
                 </td>
                 <td class="align-middle fw-bold">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-folder me-2 text-warning"></i>
+                        <i class="bi ${folderIcon} me-2 text-warning folder-toggle"
+                           style="cursor: pointer;"
+                           data-provider="${provider.name}"
+                           title="${isExpanded ? 'Collapse' : 'Expand'} group"></i>
                         <span>${provider.name}</span>
                         <small class="text-muted ms-2">(${provider.groups.length} ${window.i18n ? window.i18n.t('providers.groups') : 'groups'})</small>
                     </div>
@@ -236,46 +253,49 @@ class YADNSBApp {
             </tr>
         `;
 
-        provider.groups.forEach(group => {
-            const filteredServers = group.servers.filter(server =>
-                selectedProtocols.includes(server.type)
-            );
+        // Only show groups if expanded
+        if (isExpanded) {
+            provider.groups.forEach(group => {
+                const filteredServers = group.servers.filter(server =>
+                    selectedProtocols.includes(server.type)
+                );
 
-            if (filteredServers.length === 0) return;
+                if (filteredServers.length === 0) return;
 
-            const isGroupSelected = this.selectedProviders.some(p => p.name === group.name);
+                const isGroupSelected = this.selectedProviders.some(p => p.name === group.name);
 
-            filteredServers.forEach((server, index) => {
-                const isFirstRow = index === 0;
-                const rowspan = isFirstRow ? filteredServers.length : 0;
+                filteredServers.forEach((server, index) => {
+                    const isFirstRow = index === 0;
+                    const rowspan = isFirstRow ? filteredServers.length : 0;
 
-                rows += `
-                    <tr class="${isGroupSelected ? 'table-success' : ''}">
-                        ${isFirstRow ? `
-                            <td rowspan="${rowspan}" class="align-middle ps-4">
-                                <input class="form-check-input group-checkbox"
-                                       type="checkbox"
-                                       id="group-${group.name.replace(/\s+/g, '-')}"
-                                       data-provider="${group.name}"
-                                       data-parent="${provider.name}"
-                                       ${isGroupSelected ? 'checked' : ''}>
+                    rows += `
+                        <tr class="${isGroupSelected ? 'table-success' : ''} group-row" data-parent="${provider.name}">
+                            ${isFirstRow ? `
+                                <td rowspan="${rowspan}" class="align-middle ps-4">
+                                    <input class="form-check-input group-checkbox"
+                                           type="checkbox"
+                                           id="group-${group.name.replace(/\s+/g, '-')}"
+                                           data-provider="${group.name}"
+                                           data-parent="${provider.name}"
+                                           ${isGroupSelected ? 'checked' : ''}>
+                                </td>
+                                <td rowspan="${rowspan}" class="align-middle ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-arrow-return-right me-2 text-muted"></i>
+                                        <span>${group.groupName}</span>
+                                    </div>
+                                </td>
+                            ` : ''}
+                            <td>
+                                <span class="badge ${this.getProtocolColor(server.type)}">${server.type}</span>
                             </td>
-                            <td rowspan="${rowspan}" class="align-middle ps-4">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-arrow-return-right me-2 text-muted"></i>
-                                    <span>${group.groupName}</span>
-                                </div>
-                            </td>
-                        ` : ''}
-                        <td>
-                            <span class="badge ${this.getProtocolColor(server.type)}">${server.type}</span>
-                        </td>
-                        <td class="font-monospace">${server.address}</td>
-                        <td>${server.port}</td>
-                    </tr>
-                `;
+                            <td class="font-monospace">${server.address}</td>
+                            <td>${server.port}</td>
+                        </tr>
+                    `;
+                });
             });
-        });
+        }
 
         return rows;
     }
@@ -708,6 +728,30 @@ class YADNSBApp {
             return customProviders.findIndex(p => p.name === providerName);
         }
         return -1;
+    }
+
+    toggleGroupExpansion(providerName) {
+        if (this.expandedGroups.has(providerName)) {
+            this.expandedGroups.delete(providerName);
+        } else {
+            this.expandedGroups.add(providerName);
+        }
+        this.renderProviders();
+    }
+
+    expandAllGroups() {
+        // Find all main providers with groups
+        this.providers.forEach(provider => {
+            if (provider.isMainProvider && provider.groups && provider.groups.length > 0) {
+                this.expandedGroups.add(provider.name);
+            }
+        });
+        this.renderProviders();
+    }
+
+    collapseAllGroups() {
+        this.expandedGroups.clear();
+        this.renderProviders();
     }
 }
 

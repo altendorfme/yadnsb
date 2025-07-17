@@ -35,6 +35,8 @@
     "providers": {
         "selectAll": "全选",
         "deselectAll": "取消全选",
+        "expandAll": "全部展开",
+        "collapseAll": "全部折叠",
         "selected": "已选择 {{count}} 个提供商",
         "provider": "提供商",
         "protocol": "协议",
